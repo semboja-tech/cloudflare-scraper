@@ -3,13 +3,19 @@ import got from 'got';
 import { convertCookieToTough } from './utils.js';
 import { Browser } from './Browser.js';
 
-let userAgent;
 const jar = new CookieJar();
+
+let userAgent;
+let executablePath;
+let cookies;
 
 async function getUserAgent() {
   let browser;
   try {
     browser = await Browser.create();
+
+    executablePath = browser.getExecutablePath();
+
     return await browser.getUserAgent();
   } finally {
     if (browser) {
@@ -40,7 +46,7 @@ async function fillCookie(url) {
       }
     }
 
-    const cookies = await browser.getCookies();
+    cookies = await browser.getCookies();
     for (let cookie of cookies) {
       jar.setCookie(convertCookieToTough(cookie), url.toString());
     }
@@ -88,5 +94,13 @@ const instance = got.extend({
   cookieJar: jar,
   handlers: [handler]
 });
+
+export function getCookies() {
+  return cookies;
+}
+
+export function getExecutablePath() {
+  return executablePath;
+}
 
 export default instance;

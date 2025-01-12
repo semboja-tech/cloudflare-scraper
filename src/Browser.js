@@ -26,8 +26,11 @@ class Browser {
       if (CHROME_EXECUTABLE_PATH) {
         chromePath = CHROME_EXECUTABLE_PATH;
       }
+
+      this.executablePath = chromePath;
+
       const chromeFlags = ['--no-sandbox'];
-      const proxy = HTTPS_PROXY ? HTTPS_PROXY : HTTP_PROXY;
+      const proxy = HTTPS_PROXY || HTTP_PROXY;
       if (proxy) {
         chromeFlags.push(`--proxy-server="${proxy}"`);
       }
@@ -122,6 +125,10 @@ class Browser {
     const { Page } = this.cdp;
     const { data } = await Page.captureScreenshot();
     fs.writeFileSync(filepath, Buffer.from(data, 'base64'));
+  }
+
+  async getExecutablePath() {
+    return this.executablePath;
   }
 }
 
